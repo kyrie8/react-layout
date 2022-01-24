@@ -1,5 +1,5 @@
-import React, {lazy} from 'react'
-export const routes = [
+import {lazy} from 'react'
+export const router = [
   {
     component: '',
     path: 'dashboard',
@@ -7,21 +7,29 @@ export const routes = [
     name: 'dashboard',
     children: [
       {
-        path: 'analysis',
+        path: 'dashboard/analysis',
         icon: 'BugOutlined',
-        component: '',
-        name: '分析页'
+        component: 'dashboard/monitor',
+        name: '分析页',
+        children: [
+          {
+            path: 'dashboard/analysis/list',
+            name: '分析页列表',
+            component: 'list/index',
+          }
+
+        ]
       },
       {
-        path: 'monitor',
+        path: 'dashboard/monitor',
         icon: 'CameraOutlined',
-        component: '',
+        component: 'dashboard/analysis',
         name: '监控页'
       }
     ]
   },
   {
-    component: 'list',
+    component: 'list/index',
     name: '列表',
     icon: 'BarChartOutlined',
     path: 'list'
@@ -29,26 +37,19 @@ export const routes = [
 ]
 
 export interface IRoutes {
-  component: React.LazyExoticComponent<React.ComponentType<any>>,
+  component: any,
   name: string,
   icon: string,
   path: string,
-  children: Array<IRoutes>
-}
-
-export interface Ires {
-  component: React.LazyExoticComponent<React.ComponentType<any>>,
-  name: string,
-  icon: string,
-  path: string,
+  children?: Array<IRoutes>
 }
 
 export function formatRoutes(routes: IRoutes[]) {
-  const res: Ires[] = []
+  const res: IRoutes[] = []
   function travel(routes: IRoutes[]) {
     routes.forEach((route) => {
       if (route.path && !route.children) {
-        route.component = lazy(() => import(`../views/${route.component}`))
+        route.component = lazy(() => import(`@/pages/${route.component}`))
         res.push(route);
       } else if (Array.isArray(route.children) && route.children.length) {
         travel(route.children);

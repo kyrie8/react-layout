@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Menu, Dropdown, Button, Space, Avatar } from 'antd';
+import { Menu, Dropdown, Space, Avatar } from 'antd';
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,

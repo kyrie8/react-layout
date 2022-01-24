@@ -5,7 +5,7 @@ export enum UserInfoAction {
   EDIT = 'EDIT'
 }
 
-
+// TODO 定义获取到的路由属性
 export interface Action<T, P> {
   type: T,
   payload: P

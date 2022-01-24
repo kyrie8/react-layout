@@ -1,49 +1,47 @@
-import React, { lazy, memo} from 'react';
+import React, { memo } from 'react';
 import { Menu } from 'antd';
-import { routes } from '@/router/router'
+import * as Icon from '@ant-design/icons';
+import { router } from '@/router/router'
+import { Link } from 'react-router-dom';
 export interface IProps {
 
 }
 
-function formatRoutes(routes) {
-  const res = []
-  function travel(routes) {
-    routes.forEach((route) => {
-      if (route.path && !route.children) {
-        route.component = lazy(() => import(`@/views/${route.component}`))
-        res.push(route);
-      } else if (Array.isArray(route.children) && route.children.length) {
-        travel(route.children);
-      }
-    })
-  }
-  travel(routes)
-  return res
-}
-
 const MyMenu: React.FC<IProps> = (props) => {
-  const asyncRoutes = formatRoutes(routes)
-  console.log('asyncRoutes',asyncRoutes)
+  function renderMenuIcon(name) {
+    return (
+      React.createElement(Icon[name], {})
+    )
+  }
   function renderMenuItem(route) {
     return (
-      <Menu.Item icon={<route.icon/>} key={route.path}>
-        {route.name}
+      <Menu.Item icon={ route.icon && renderMenuIcon(route.icon)} key={route.path}>
+        <Link to={route.path}>
+          {route.name}
+        </Link>
       </Menu.Item>
     )
   }
   function renderSubMenu(route) {
-    <Menu.SubMenu>
-      {
-        route.map(child => {
-          return child.children && child.children.length ? renderSubMenu(child) : renderMenuItem(child)
-        })
-      }
-    </Menu.SubMenu>
+    return (
+      <Menu.SubMenu icon={renderMenuIcon(route.icon)} key={route.path} title={route.name}>
+        {
+          route.children.map(child => {
+            return child.children && child.children.length ? renderSubMenu(child) : renderMenuItem(child)
+          })
+        }
+      </Menu.SubMenu>
+    )
   }
   return (
-    <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
+    <Menu
+      theme="dark"
+      mode="inline"
+      defaultOpenKeys={['dashboard','analysis']}
+      defaultSelectedKeys={['analysis/list1']}
+      >
       {
-        routes.map(route => {
+        router.map(route => {
           return route.children && route.children.length ? renderSubMenu(route) : renderMenuItem(route)
         })
       }
