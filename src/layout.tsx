@@ -1,4 +1,4 @@
-import React, { memo, useState, useMemo, useEffect, useRef } from 'react';
+import React, { memo, useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { router, IRoutes } from './router/router'
 import lazyLoad from '@/utils/loadable'
@@ -12,19 +12,6 @@ const {Header, Sider, Content} = Layout
 export interface IProps {
 
 }
-
-/* function formatRoutes(data) {
-  let res = []
-  data.forEach(item => {
-    const copyData = JSON.parse(JSON.stringify(item))
-    delete copyData['children']
-    res.push(copyData)
-    if (item.children && item.children.length) {
-      res = res.concat(formatRoutes(item.children))
-    }
-  })
-  return res
-} */
 
 function formatRoutes(router) {
   const res = []
@@ -56,6 +43,7 @@ function config(paths) {
       ele = paths[0]
     }
     selectKey.push(ele)
+    console.log(selectKey)
   }
   return selectKey
 }
@@ -72,7 +60,8 @@ const PageLayout: React.FC<IProps> = (props) => {
   const [openKeys] = useState<string[]>(selectKey)
   const [selectdKeys] = useState([pathname])
   useEffect(() => {
-    //config()
+    breadRecord(selectKey)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
   function renderMenuIcon(name) {
     return (
@@ -97,7 +86,7 @@ const PageLayout: React.FC<IProps> = (props) => {
       </Menu.SubMenu>
     )
   }
-  function renderBread(keyPath) {
+  function breadRecord(keyPath) {
     const arr = []
     record.forEach(item => {
       keyPath.reverse().forEach(path => {
@@ -109,7 +98,7 @@ const PageLayout: React.FC<IProps> = (props) => {
     setBread([...arr])
   }
   function onClickMenuItem({key, keyPath}) {
-    renderBread(keyPath)
+    breadRecord(keyPath)
     navigate(key)
   }
 
