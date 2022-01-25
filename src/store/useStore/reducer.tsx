@@ -1,4 +1,4 @@
-import {UserInfoAction, UpdateAction, IUserInfo} from './constant'
+import {UserInfoAction, UpdateAction, IUserInfo, Action} from './constant'
 
 export interface IUserState {
   userInfo: IUserInfo
@@ -14,14 +14,16 @@ const defaultState: IUserState = {
   }
 }
 
-const reducer = (state = defaultState, action: UpdateAction) => {
+const reducer = (state = defaultState, action: Action<UserInfoAction, IUserInfo>) => {
   switch(action.type) {
     case UserInfoAction.UPDATE:
       const {userId, userName} = action.payload
       return {
         ...state,
-        userId,
-        userName
+        userInfo: {
+          userId,
+          userName
+        }
       }
     default: 
       return state

@@ -8,6 +8,7 @@ import {
 import styles from './nav.module.less'
 import { shallowEqual, useSelector } from 'react-redux';
 import { GlobalState } from '@/store/reducer';
+import { useNavigate } from 'react-router-dom';
 export interface IProps {
   collapsed: boolean,
   toggle: () => void
@@ -19,6 +20,7 @@ const NavBar: React.FC<IProps> = (props) => {
   const {userInfo: {userName, avatar}} = useSelector((state: GlobalState) => ({
     userInfo: state.user.userInfo
   }), shallowEqual)
+  const nav = useNavigate()
 
   const renderDropdown = (
     <Menu onClick={(val) => DropdownClick(val)}>
@@ -31,6 +33,14 @@ const NavBar: React.FC<IProps> = (props) => {
 
   function DropdownClick({key}: {key: string}) {
     console.log('key', key)
+    switch (key) {
+      case '1':
+        nav('/login')
+        break;
+    
+      default:
+        break;
+    }
   }
 
   function toggleClick(e: React.MouseEvent) {

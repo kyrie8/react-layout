@@ -1,13 +1,10 @@
 import React, { memo, useState, useMemo, useEffect, useRef } from 'react';
-import { Outlet, useNavigate} from 'react-router-dom';
+import { Route, Routes, useNavigate, useLocation } from 'react-router-dom';
+import { router, IRoutes } from './router/router'
+import lazyLoad from '@/utils/loadable'
 import { Layout, Menu, Breadcrumb } from 'antd';
 import * as Icon from '@ant-design/icons';
-//import Menu from './components/Menu';
 import NavBar from './components/NavBar';
-//import Breadcrumb from './components/Breadcrumb';
-
-import {router} from '@/router/router'
-
 import styles from './layout.module.less';
 
 const {Header, Sider, Content} = Layout
@@ -16,7 +13,7 @@ export interface IProps {
 
 }
 
-function formatRoutes(data) {
+/* function formatRoutes(data) {
   let res = []
   data.forEach(item => {
     const copyData = JSON.parse(JSON.stringify(item))
@@ -27,24 +24,56 @@ function formatRoutes(data) {
     }
   })
   return res
+} */
+
+function formatRoutes(router) {
+  const res = []
+  const record = []
+  function travel(router) {
+    router.forEach((route) => {
+      const copyData = JSON.parse(JSON.stringify(route))
+      delete copyData['children']
+      record.push(copyData)
+      if (route.path && !route.children) {
+        route.element = lazyLoad(() => import(`@/pages/${route.component}`))
+        res.push(route)
+      } else if (Array.isArray(route.children) && route.children.length) {
+        travel(route.children)
+      }
+    })
+  }
+  travel(router)
+  return {res, record}
+}
+
+function config(paths) {
+  const selectKey = []
+  let ele = ''
+  for (let index = 0; index < paths.length; index++) {
+    if (index) {
+      ele = ele + '/' + paths[index]
+    } else {
+      ele = paths[0]
+    }
+    selectKey.push(ele)
+  }
+  return selectKey
 }
 
 const PageLayout: React.FC<IProps> = (props) => {
   const [collapsed, setCollapsed] = useState(false)
   const [bread, setBread] = useState([])
-  const firstRoute = useRef([])
-  const flatRoutes = useMemo(() => formatRoutes(router), [])
-  const defaultOpenKeys = []
-  const defaultSelectedKeys = []
-  useEffect(() => {
-    firstRoute.current = []
-    firstConfig(router[0])
-    setBread([...firstRoute.current])
-    console.log('firstRoute.current',firstRoute.current)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
   const navigate = useNavigate()
-  
+  const location = useLocation()
+  const pathname = location.pathname.slice(1)
+  const paths = pathname.split('/')
+  const {res : flatRouter , record} = useMemo(() => formatRoutes(router as IRoutes[]), [])
+  const selectKey = useMemo(() => config(paths), [paths])
+  const [openKeys] = useState<string[]>(selectKey)
+  const [selectdKeys] = useState([pathname])
+  useEffect(() => {
+    //config()
+  },[])
   function renderMenuIcon(name) {
     return (
       React.createElement(Icon[name], {})
@@ -68,27 +97,9 @@ const PageLayout: React.FC<IProps> = (props) => {
       </Menu.SubMenu>
     )
   }
-  function firstConfig(data) {
-    if (data.children && data.children.length) {
-      firstRoute.current.push({
-        path: data.path,
-        name: data.name
-      })
-      defaultOpenKeys.push(data.path)
-      firstConfig(data.children[0])
-    } else {
-      firstRoute.current.push({
-        path: data.path,
-        name: data.name
-      })
-      defaultSelectedKeys.push(data.path)
-      defaultOpenKeys.push(data.path)
-    }
-  }
-  function onClickMenuItem({key, keyPath}) {
-    console.log('key', key, keyPath)
+  function renderBread(keyPath) {
     const arr = []
-    flatRoutes.forEach(item => {
+    record.forEach(item => {
       keyPath.reverse().forEach(path => {
         if (item.path === path) {
           arr.push(item)
@@ -96,12 +107,15 @@ const PageLayout: React.FC<IProps> = (props) => {
       })
     })
     setBread([...arr])
+  }
+  function onClickMenuItem({key, keyPath}) {
+    renderBread(keyPath)
     navigate(key)
   }
 
   return (
     <Layout>
-      <Sider className={styles['sider-light']} trigger={null} collapsible collapsed={collapsed}>
+      <Sider className={styles['sider-dark']} trigger={null} collapsible collapsed={collapsed}>
         <div className={`${styles.logo} ${collapsed ? styles["logo-collapsed"] : ''}`}>
           <span>
             <img src='https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg' alt="" />
@@ -109,10 +123,10 @@ const PageLayout: React.FC<IProps> = (props) => {
           </span>
         </div>
         <Menu
-          theme="light"
+          theme="dark"
           mode="inline"
-          defaultOpenKeys={defaultOpenKeys}
-          defaultSelectedKeys={defaultSelectedKeys}
+          defaultOpenKeys={openKeys}
+          defaultSelectedKeys={selectdKeys}
           onClick={onClickMenuItem}
           >
           {
@@ -144,10 +158,25 @@ const PageLayout: React.FC<IProps> = (props) => {
           style={{
             padding: 24,
             minHeight: 280,
-            margin: '0 16px'
+            margin: '0 16px',
+            marginBottom: '16px'
           }}
         >
-          <Outlet></Outlet>
+          <Routes>
+          {
+            flatRouter.map(item => {
+              return (
+                <Route
+                  key={item.path}
+                  path={item.path}
+                  element={
+                    <item.element/>
+                  }
+                />
+              )
+            })
+            }
+          </Routes>
         </Content>
       </Layout>
     </Layout>

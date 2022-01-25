@@ -1,4 +1,3 @@
-import {lazy} from 'react'
 export const router = [
   {
     component: '',
@@ -42,20 +41,4 @@ export interface IRoutes {
   icon: string,
   path: string,
   children?: Array<IRoutes>
-}
-
-export function formatRoutes(routes: IRoutes[]) {
-  const res: IRoutes[] = []
-  function travel(routes: IRoutes[]) {
-    routes.forEach((route) => {
-      if (route.path && !route.children) {
-        route.component = lazy(() => import(`@/pages/${route.component}`))
-        res.push(route);
-      } else if (Array.isArray(route.children) && route.children.length) {
-        travel(route.children);
-      }
-    })
-  }
-  travel(routes)
-  return res
 }
