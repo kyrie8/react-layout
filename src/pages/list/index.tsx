@@ -1,5 +1,5 @@
-import React, { memo, useEffect } from 'react';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import React, { memo } from 'react';
+import { useDispatch} from 'react-redux';
 import {updateTheme} from '@/store/settingStore/action'
 import { Button } from 'antd';
 export interface IProps {
@@ -9,7 +9,6 @@ export interface IProps {
 const List: React.FC<IProps> = (props) => {
   const dispatch = useDispatch()
   function ColorChang (e: React.ChangeEvent<HTMLInputElement>) {
-    console.log('e', e.target.value)
     dispatch(updateTheme({
       color: e.target.value
     }))

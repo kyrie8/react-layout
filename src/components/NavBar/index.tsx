@@ -9,6 +9,9 @@ import styles from './nav.module.less'
 import { shallowEqual, useSelector } from 'react-redux';
 import { GlobalState } from '@/store/reducer';
 import { useNavigate } from 'react-router-dom';
+
+import useStorage from '@/utils/useStorage';
+
 export interface IProps {
   collapsed: boolean,
   toggle: () => void
@@ -21,7 +24,7 @@ const NavBar: React.FC<IProps> = (props) => {
     userInfo: state.user.userInfo
   }), shallowEqual)
   const nav = useNavigate()
-
+  const [,,removeStorage] = useStorage('token')
   const renderDropdown = (
     <Menu onClick={(val) => DropdownClick(val)}>
       <Menu.Item key='1'>
@@ -36,6 +39,7 @@ const NavBar: React.FC<IProps> = (props) => {
     switch (key) {
       case '1':
         nav('/login')
+        removeStorage()
         break;
     
       default:

@@ -6,7 +6,7 @@ export enum UserInfoAction {
 }
 
 // TODO 定义获取到的路由属性
-export interface Action<T, P> {
+export type Action<T, P> = {
   type: T,
   payload: P
 }
@@ -19,4 +19,4 @@ export interface IUserInfo {
   avatar?: string
 }
 
-export type UpdateAction = Action<UserInfoAction.UPDATE, IUserInfo>
+//export type UpdateAction = Action<UserInfoAction.UPDATE, IUserInfo>

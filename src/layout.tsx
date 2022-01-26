@@ -1,4 +1,4 @@
-import React, { memo, useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import React, { memo, useState, useMemo, useEffect } from 'react';
 import { Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { router, IRoutes } from './router/router'
 import lazyLoad from '@/utils/loadable'
@@ -43,8 +43,8 @@ function config(paths) {
       ele = paths[0]
     }
     selectKey.push(ele)
-    console.log(selectKey)
   }
+  console.log(selectKey)
   return selectKey
 }
 

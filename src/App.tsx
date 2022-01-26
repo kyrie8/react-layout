@@ -7,11 +7,13 @@ import Layout from './layout'
 import Login from '@/pages/login'
 import { ConfigProvider } from 'antd'
 import {GlobalState} from './store/reducer'
+import useStorage from './utils/useStorage';
 
 function App() {
   const {themeColor} = useSelector((state: GlobalState) => ({
-    themeColor: state.setting.themeInfo.color
+    themeColor: state.setting.color
   }), shallowEqual)
+  const [storageValue] = useStorage('token')
   useEffect(() => {
     ConfigProvider.config({
       prefixCls: 'ant',
@@ -19,7 +21,10 @@ function App() {
         primaryColor: themeColor
       }
     })
-  }, [themeColor])
+    if (!storageValue) {
+      window.location.hash = '/login'
+    }
+  }, [storageValue, themeColor])
   return (
     <div className={styles.app}>
       <ConfigProvider>

@@ -12,7 +12,11 @@ function load(fn, options) {
 
 function LoadingComponent() {
   return (
-    <div>
+    <div style={{display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: '100%',
+      height: '100%'}}>
       <Spin/>
     </div>
   )
