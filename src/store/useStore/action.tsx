@@ -9,8 +9,8 @@ const userInfo = (res: IUserInfo) => {
 }
 
 export const UpdateUserInfo = (payload :IUserInfo) => {
-  return (dispath: Dispatch) => {
+  return (dispatch: Dispatch) => {
     //向服务器获取数据 下面的payload需改成服务端的数据
-    dispath(userInfo(payload))
+    dispatch(userInfo(payload))
   }
 }
